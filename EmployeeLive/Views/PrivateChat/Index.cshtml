@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Private Chat";
+}
+
+
+<div style="width:100%;text-align:center;margin-bottom:50px;margin-bottom:50px"><h1>Privat Chat</h1></div>
+<div>
+    <Lable>Chat With :</Lable>
+    <select id="RecieverName">
+        <option value="Priya">Priya</option>
+        <option value="Esther">Esther</option>
+        <option value="Krishna">Krishna</option>
+        <option value="Pallavi">Pallavi</option>
+    </select>
+    <button id="NextBtn">Next</button>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#NextBtn').click(function () {
+            debugger
+            window.location.href = 'PrivateChat/PrivateChat?RecieverName=' + $('#RecieverName option:selected').val();;
+        })
+    })
+</script>

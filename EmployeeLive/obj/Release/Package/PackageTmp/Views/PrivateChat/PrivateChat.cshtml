@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "Private Chat";
+}
+
+<div style="width:100%;text-align:center;margin-bottom:50px;margin-bottom:50px"><h1>Privat Chat</h1></div>
+
+<div style="width:100%">Chat Between </i></b></div>
+<style>
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    th {
+        width: 10%;
+    }
+
+    th, td {
+        border-bottom: 1px solid #ddd;
+    }
+    /*tbody{
+        height:50px;
+         width: 100%;
+    overflow: auto;
+    }*/
+</style>
+<script type="text/javascript">
+    window.setInterval(function () {
+        var elem = document.getElementById('ChatDiv');
+       // var elem2 = document.getElementById('statusdiv');
+
+        elem.scrollTop = elem.scrollHeight;
+      //  elem2.scrollTop = elem2.scrollHeight;
+    }, 500);
+        var getData4 = '@Url.RouteUrl("Default", new { controller = "PrivateChat", action = "GetData" })';
+          $(function () {
+          
+            //  $.connection.hub.stop();
+
+              var job3 = $.connection.privateHub;
+
+              // Declare a function on the job hub so the server can invoke it
+              job3.client.displayStatus = function () {
+                  getData();
+              };
+              debugger
+              // Start the connection
+             // $.connection.hub.logging = true;
+             $.connection.hub.start();
+              getData();
+
+
+          });
+
+          function getData() {
+
+              var $tbl = $('#tblbody');
+            //  debugger;
+              $.ajax({
+                  url: getData4,
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  type: "POST",
+                  success: function (data) {
+                      console.log(data);
+                      debugger;
+                      //alert('Success');
+                      if (data.length > 0) {
+                         // var lankanListArray = JSON.parse(data);
+                          var newdata = data;
+                          $tbl.empty();
+                          //$tbl.append('<thead> <tr><th>ID</th><th>Name</th><th>UnitPrice</th><th>Quantity</th></tr></thead><tbody>');
+                          var rows = [];
+                          var sendername='@Session["SenderName"].ToString()';
+                          for (var i = 0; i < newdata.length; i++) {
+                              if (newdata[i].Name==sendername)
+                              {
+                               rows.push(' <tr><td>' + newdata[i].Message + '</td><td></td></tr>');
+                              }
+                              else
+                              {
+                                  rows.push(' <tr><td></td><td>' + newdata[i].Message + '</td></tr>');
+                              }
+
+                             
+                          }
+
+                          $tbl.append(rows.join(''));
+                        //  $tbl.append('</tbody>')
+
+                      }
+                  },
+                  error: function (data) {
+                      debugger;
+                    //  alert('error');
+                  }
+              });
+          }
+          $(document).ready(function () {
+              var urlsendMessage = '@Url.RouteUrl("Default", new { controller = "PrivateChat", action = "SendMessage" })';
+              $('#SendBtn').click(function () {
+                  $.ajax({
+                      url: urlsendMessage,
+                      //contentType: "application/json; charset=utf-8",
+                     // dataType: "json",
+                      data:{'message':$('#msgbx').val()},
+                      type: "POST",
+                      success: function (data) {
+                          ('success');
+                          $('#msgbx').val("");
+                      },
+                      error: function (data) {
+                          alert('error');
+                      }
+                  })
+              })
+          })
+</script>
+
+
+<div>
+    <div style="width:100%;height:150px;overflow:auto" id="ChatDiv">
+        <table id="tbl">
+            <thead style="width:100%;"> <tr><th>@Session["SenderName"].ToString()</th><th>@Session["RecieverName"].ToString()</th></tr></thead>
+
+            <tbody id="tblbody">
+                <tr><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+
+        </table>
+
+    </div>
+    <div>
+        <label>Message:</label>
+        <input type="text" id="msgbx" placeholder="Enter Message Here" />
+        <button id="SendBtn">Send</button>
+    </div>
+</div>
+
+

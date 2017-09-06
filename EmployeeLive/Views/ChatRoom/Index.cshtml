@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "Chat Room";
+}
+
+<div style="width:100%;text-align:center;margin-bottom:50px;margin-bottom:50px"><h1>Chat Room</h1></div>
+<style>
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    th {
+        width: 10%;
+    }
+
+    th, td {
+        border-bottom: 1px solid #ddd;
+    }
+    /*tbody{
+        height:50px;
+         width: 100%;
+    overflow: auto;
+    }*/
+</style>
+<script type="text/javascript">
+    window.setInterval(function () {
+        var elem = document.getElementById('ChatDiv');
+       // var elem2 = document.getElementById('statusdiv');
+
+        elem.scrollTop = elem.scrollHeight;
+      //  elem2.scrollTop = elem2.scrollHeight;
+    }, 500);
+        var getData3 = '@Url.RouteUrl("Default", new { controller = "ChatRoom", action = "GetData" })';
+          $(function () {
+            $.connection.hub.stop();
+            debugger
+              var job2 = $.connection.chatHub;
+
+              // Declare a function on the job hub so the server can invoke it
+              job2.client.displayStatus = function () {
+                  getData();
+              };
+
+              // Start the connection
+             // $.connection.hub.logging = true;
+             $.connection.hub.start();
+              getData();
+              
+
+          });
+
+          function getData() {
+
+              var $tbl = $('#tblbody');
+            //  debugger;
+              $.ajax({
+                  url: getData3,
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  type: "POST",
+                  success: function (data) {
+                      console.log(data);
+                //      debugger;
+                      //alert('Success');
+                      if (data.length > 0) {
+                         // var lankanListArray = JSON.parse(data);
+                          var newdata = data;
+                          $tbl.empty();
+                          //$tbl.append('<thead> <tr><th>ID</th><th>Name</th><th>UnitPrice</th><th>Quantity</th></tr></thead><tbody>');
+                          var rows = [];
+                          for (var i = 0; i < newdata.length; i++) {
+                              rows.push(' <tr><td>' + newdata[i].ChatID + '</td><td>' + newdata[i].SenderName + '</td><td>' + newdata[i].Message + '</td></tr>');
+                          }
+
+                          $tbl.append(rows.join(''));
+                        //  $tbl.append('</tbody>')
+
+                      }
+                  },
+                  error: function (data) {
+                      debugger;
+                    //  alert('error');
+                  }
+              });
+          }
+          $(document).ready(function () {
+              var urlsendMessage = '@Url.RouteUrl("Default", new { controller = "ChatRoom", action = "SendMessage" })';
+              $('#SendBtn').click(function () {
+                  $.ajax({
+                      url: urlsendMessage,
+                      //contentType: "application/json; charset=utf-8",
+                     // dataType: "json",
+                      data:{'message':$('#msgbx').val()},
+                      type: "POST",
+                      success: function (data) {
+                          ('success');
+                          $('#msgbx').val("");
+                      },
+                      error: function (data) {
+                          alert('error');
+                      }
+                  })
+              })
+          })
+</script>
+
+
+<body>
+    @*<form id="form1" runat="server">*@
+    <div style="width:100%;height:150px;overflow:auto" id="ChatDiv">
+        <table id="tbl" >
+            <thead style="width:100%;"> <tr><th>Chat ID</th><th>Sender Name</th><th>Message</th></tr></thead>
+            
+                <tbody id="tblbody" >
+                    <tr><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+           
+</table>
+        
+    </div>
+    <div>
+        <label>Message:</label>
+        <input type="text" id="msgbx" placeholder="Enter Message Here" />
+        <button id="SendBtn">Send</button>
+    </div>
+    @*</form>*@
+</body>

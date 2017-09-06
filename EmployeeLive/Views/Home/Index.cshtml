@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "Employee Asset Details";
+}
+
+<div style="width:100%;text-align:center;margin-bottom:50px;margin-bottom:50px"><h1>Employee Asset Details</h1></div>
+
+<style>
+    
+    tr:nth-child(even) {background-color: #f2f2f2}
+    th{
+        width:10%
+    }
+    th, td {
+    border-bottom: 1px solid #ddd;
+}
+    </style>
+    <script type="text/javascript">
+        
+        var getData2 = '@Url.RouteUrl("Default", new { controller = "Home", action = "GetData" })';
+          $(function () {
+          
+              $.connection.hub.stop();
+              var job = $.connection.myHub;
+
+              // Declare a function on the job hub so the server can invoke it
+              job.client.displayStatus = function () {
+                  getData();
+              };
+
+              // Start the connection
+              //$.connection.hub.logging = true;
+              $.connection.hub.start();
+                getData();
+             
+          });
+
+          function getData() {
+              
+              var $tbl = $('#tblbody');
+              debugger;
+              $.ajax({
+                  url: getData2,
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  type: "POST",
+                  success: function (data) {
+                      console.log(data);
+                      debugger;
+                      //alert('Success');
+                      if (data.length > 0) {
+                         // var lankanListArray = JSON.parse(data);
+                          var newdata = data;
+                          $tbl.empty();
+                          //$tbl.append('<thead> <tr><th>ID</th><th>Name</th><th>UnitPrice</th><th>Quantity</th></tr></thead><tbody>');
+                          var rows = [];
+                          for (var i = 0; i < newdata.length; i++) {
+                              rows.push(' <tr><td>' + newdata[i].id + '</td><td>' + newdata[i].Name + '</td><td>' + newdata[i].PricDecimal + '</td><td>' + newdata[i].QuantDecimal + '</td></tr>');
+                          }
+                          
+                          $tbl.append(rows.join(''));
+                        //  $tbl.append('</tbody>')
+                          
+                      }
+                  },
+                  error: function (data) {
+                      debugger;
+                    //  alert('error');
+                  }
+              });
+          }
+          $(document).ready(function () {
+            
+          });
+    </script>
+
+
+<body>
+    @*<form id="form1" runat="server">*@
+        <div>
+            <table id="tbl">
+                <thead> <tr><th>ID</th><th>Asset Name</th><th>UnitPrice</th><th>Quantity</th></tr></thead>
+                <tbody id="tblbody">
+                    <tr><td></td><td></td><td></td><td></td></tr>
+                    </tbody>
+</table>
+        </div>
+    @*</form>*@
+</body>
+@*</html>*@
+
+
